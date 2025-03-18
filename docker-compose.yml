@@ -13,15 +13,18 @@ services:
       - /home/chatbot/app:/app
 
   db:
-    build: ./db   # Build from the PostgreSQL Dockerfile
+    image: postgres:15
     container_name: ai-chatbot-db
     restart: always
     env_file:
-      - .env    # Load environment variables
+      - .env
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+      - ./db/postgresql.conf:/etc/postgresql/postgresql.conf
 
   streamlit-ui:
     build: ./streamlit_ui

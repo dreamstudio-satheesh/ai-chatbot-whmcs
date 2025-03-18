@@ -1,3 +1,18 @@
+-- Enable pgvector extension in the default database
+CREATE EXTENSION IF NOT EXISTS vector;
+
+-- Ensure the database exists
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_database WHERE datname = current_database()) THEN
+        EXECUTE format('CREATE DATABASE %I', current_database());
+    END IF;
+END $$;
+
+-- Connect to the newly created database
+\c :POSTGRES_DB
+
+-- Enable pgvector in the user-defined database
 CREATE EXTENSION IF NOT EXISTS vector;
 
 
