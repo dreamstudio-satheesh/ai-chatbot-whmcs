@@ -9,6 +9,8 @@ services:
     depends_on:
       - db
     restart: always
+    volumes:
+      - /home/chatbot/app:/app
 
   db:
     image: postgres:15
