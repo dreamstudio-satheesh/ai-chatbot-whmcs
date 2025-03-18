@@ -87,5 +87,6 @@ Which feature do you want to work on next? 🚀
 3️⃣ **Add JWT Authentication?**  
 4️⃣ **Enhance Streamlit UI?**  
 
+
 Let me know your priority, and we’ll proceed! 🚀
 
