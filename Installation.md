@@ -34,7 +34,8 @@ sudo chmod a+r /etc/apt/keyrings/docker.asc
 ### 3.2 Set Up Docker Repository
 
 ```bash
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+echo "echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
 sudo apt update
 ```
 
@@ -54,6 +55,7 @@ docker compose version
 ## Step 4: Clone the Repository
 
 ```bash
+cd /home/
 git clone https://github.com/dreamstudio-satheesh/ai-chatbot-whmcs.git
 cd ai-chatbot-whmcs
 ```

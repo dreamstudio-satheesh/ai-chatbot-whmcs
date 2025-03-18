@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+psycopg2-binary
+sqlalchemy
+faiss-cpu
+openai
+pydantic
+
