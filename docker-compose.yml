@@ -15,7 +15,6 @@ services:
   db:
     build: ./db   # Build from the PostgreSQL Dockerfile
     container_name: ai-chatbot-db
-    dockerfile: Dockerfile
     restart: always
     env_file:
       - .env    # Load environment variables
