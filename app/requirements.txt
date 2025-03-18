@@ -6,4 +6,5 @@ sqlalchemy
 faiss-cpu
 openai
 pydantic
+python-dotenv
 
