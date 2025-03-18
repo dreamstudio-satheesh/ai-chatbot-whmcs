@@ -1,9 +1,11 @@
-from fastapi import APIRouter
-from services.chatbot import chat_with_ai
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 
-router = APIRouter()
+router = APIRouter(prefix="/api")
 
-@router.get("/chat")
-async def chatbot_response(query: str):
-    response = chat_with_ai(query)
-    return {"response": response}
+class ChatRequest(BaseModel):
+    message: str
+
+@router.post("/chat")
+async def chat_endpoint(request: ChatRequest):
+    return {"response": f"AI response to: {request.message}"}
