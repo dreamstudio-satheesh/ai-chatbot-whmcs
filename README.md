@@ -37,36 +37,11 @@ ai-chatbot-whmcs/
 │── docker-compose.yml   # Docker Compose setup
 │── requirements.txt     # Python dependencies
 │── README.md            # Project documentation
+│── Installation.md      # Installation & Setup Instructions
 ```
 
 ## Installation & Setup
-### 1. Clone the Repository
-```bash
-git clone <repo-url>
-cd ai-chatbot-whmcs
-```
-
-### 2. Set Up Environment Variables
-Create a `.env` file with database credentials:
-```env
-DATABASE_URL=postgresql://postgres:password@postgres:5432/ai_db
-WHMCS_API_URL=<your-whmcs-url>
-WHMCS_API_KEY=<your-api-key>
-```
-
-### 3. Build & Start the Containers
-```bash
-docker-compose up -d --build
-```
-
-### 4. Verify Running Services
-```bash
-docker ps
-```
-Expected containers:
-- `ai_chatbot_backend` (FastAPI service)
-- `postgres_db` (PostgreSQL database)
-- `streamlit_admin` (Streamlit UI, if enabled)
+For detailed installation steps, refer to the [Installation Guide](Installation.md).
 
 ## Usage
 ### API Endpoints (FastAPI)
