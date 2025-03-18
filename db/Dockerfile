@@ -1,14 +1,17 @@
-# Use the official PostgreSQL image
-FROM postgres:15
+FROM postgres:14.1-alpine
 
-# Copy initialization files
-COPY init.sql /docker-entrypoint-initdb.d/
-COPY pg_hba.conf /var/lib/postgresql/data/
-COPY init-user.sh /docker-entrypoint-initdb.d/
+WORKDIR /var/lib/postgresql
 
-# Ensure the init-user.sh script is executable
-RUN chmod +x /docker-entrypoint-initdb.d/init-user.sh
+# Install gosu to correctly switch users
+RUN apt-get update && apt-get install -y gosu
 
-# Default PostgreSQL startup
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["postgres"]
+# Copy scripts and configurations
+COPY entrypoint.sh /entrypoint.sh
+COPY pg_hba.conf /etc/postgresql/pg_hba.conf
+COPY postgresql.conf /etc/postgresql/postgresql.conf
+
+# Ensure scripts are executable
+RUN chmod +x /entrypoint.sh
+
+# Set the entrypoint script
+ENTRYPOINT ["/entrypoint.sh"]
