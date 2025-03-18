@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.services.chatbot import chat_with_ai
+from services.chatbot import chat_with_ai
 
 router = APIRouter()
 

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.utils.database import get_db
-from app.models.ticket import Ticket
+from utils.database import get_db
+from models.ticket import Ticket
 from typing import List
 from pydantic import BaseModel
 

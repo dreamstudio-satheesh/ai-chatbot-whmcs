@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routes import tickets, chatbot
+from routes import tickets, chatbot
 
 app = FastAPI(title="AI Chatbot & Ticket Answering System")
 
