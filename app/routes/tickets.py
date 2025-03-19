@@ -32,6 +32,7 @@ def get_whmcs_tickets():
         "action": "GetTickets",
         "username": WHMCS_USERNAME,
         "password": WHMCS_PASSWORD,
+        'status': "All Active Tickets"
         "responsetype": "json"
     }
     
