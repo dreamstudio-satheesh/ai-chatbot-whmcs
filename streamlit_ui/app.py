@@ -21,14 +21,14 @@ def login(username, password):
         st.session_state["authenticated"] = True
         st.session_state["username"] = username
         st.success(f"Welcome, {username}!")
-        st.experimental_rerun()
+        st.rerun()
     else:
         st.error("Invalid username or password")
 
 # Logout function
 def logout():
     st.session_state["authenticated"] = False
-    st.experimental_rerun()
+    st.rerun()
 
 # Streamlit UI
 st.title("🔐 Login - AI Chatbot Dashboard")
