@@ -30,8 +30,8 @@ def get_whmcs_tickets():
     
     payload = {
         "action": "GetTickets",
-        "username": WHMCS_USERNAME,
-        "password": WHMCS_PASSWORD,
+        "identifier": WHMCS_USERNAME,
+        "secret": WHMCS_PASSWORD,
         "responsetype": "json"
     }
     
