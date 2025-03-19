@@ -1,47 +1,32 @@
 import streamlit as st
-import os
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
-
-# Hardcoded user credentials (for testing purposes)
-VALID_USERS = {
-    "admin": "admin123",  # username: password
-    "support": "support456"
-}
+from login import login_screen, logout
+from rag_search import search_ui
+from rag_upload import upload_ui
+import config
 
 # Initialize session state
 if "authenticated" not in st.session_state:
     st.session_state["authenticated"] = False
 
-# Login function
-def login(username, password):
-    if username in VALID_USERS and VALID_USERS[username] == password:
-        st.session_state["authenticated"] = True
-        st.session_state["username"] = username
-        st.success(f"Welcome, {username}!")
-        st.rerun()
-    else:
-        st.error("Invalid username or password")
-
-# Logout function
-def logout():
-    st.session_state["authenticated"] = False
-    st.rerun()
-
-# Streamlit UI
-st.title("🔐 Login - AI Chatbot Dashboard")
-
+# ----------------- LOGIN SCREEN -----------------
 if not st.session_state["authenticated"]:
-    with st.form("login_form"):
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
-        submit = st.form_submit_button("Login")
-    
-    if submit:
-        login(username, password)
-else:
-    st.sidebar.button("Logout", on_click=logout)
-    st.success(f"Logged in as {st.session_state['username']}")
-    st.write("Welcome to the AI Chatbot Dashboard!")
+    login_screen()  # Call login UI
+    st.stop()  # Stop further UI rendering if not authenticated
+
+# ----------------- MAIN UI AFTER LOGIN -----------------
+st.set_page_config(page_title="RAG Management", layout="wide")
+
+st.sidebar.header(f"👤 Logged in as: {st.session_state['username']}")
+st.sidebar.button("Logout", on_click=logout)
+
+st.title("🔍 AI Chatbot - RAG Management")
+
+# Sidebar Navigation
+st.sidebar.header("Navigation")
+page = st.sidebar.radio("Go to", ["Search Knowledge Base", "Upload Document"])
+
+# Load the selected module
+if page == "Search Knowledge Base":
+    search_ui()
+elif page == "Upload Document":
+    upload_ui()
