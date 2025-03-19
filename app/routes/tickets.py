@@ -18,10 +18,10 @@ class TicketRequest(BaseModel):
 # WHMCS API Function
 def get_whmcs_tickets():
     WHMCS_API_URL = os.getenv("WHMCS_API_URL")
-    WHMCS_API_KEY = os.getenv("WHMCS_API_KEY")  # Admin username
-    WHMCS_API_IDENTIFIER = os.getenv("WHMCS_API_IDENTIFIER")  # Admin password (or hashed)
+    WHMCS_USERNAME = os.getenv("WHMCS_USERNAME")  # Admin username
+    WHMCS_PASSWORD = os.getenv("WHMCS_PASSWORD")  # Admin password (or hashed)
     
-    if not WHMCS_API_URL or not WHMCS_API_KEY or not WHMCS_API_IDENTIFIER:
+    if not WHMCS_API_URL or not WHMCS_USERNAME or not WHMCS_PASSWORD:
         raise HTTPException(status_code=500, detail="Missing WHMCS API credentials")
     
     headers = {
@@ -30,8 +30,8 @@ def get_whmcs_tickets():
     
     payload = {
         "action": "GetTickets",
-        "identifier": WHMCS_API_IDENTIFIER,
-        "secret": WHMCS_API_KEY,
+        "username": WHMCS_USERNAME,
+        "password": WHMCS_PASSWORD,
         "responsetype": "json"
     }
     
