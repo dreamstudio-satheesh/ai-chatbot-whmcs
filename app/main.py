@@ -5,7 +5,7 @@ app = FastAPI(title="AI Chatbot & Ticket Answering System")
 
 # Include API Routes
 app.include_router(tickets.router, prefix="/api")
-app.include_router(chatbot.router) 
+app.include_router(chatbot.router, prefix="/api") 
 
 
 

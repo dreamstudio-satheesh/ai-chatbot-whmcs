@@ -10,7 +10,7 @@ import os
 # Load environment variables
 load_dotenv()
 
-router = APIRouter(prefix="/api")
+router = APIRouter()
 
 # OpenRouter.ai API Key
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
