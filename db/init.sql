@@ -1,27 +1,6 @@
 -- Enable pgvector extension
 CREATE EXTENSION IF NOT EXISTS vector;
 
--- Create database (if not already created by POSTGRES_DB)
-SELECT 'CREATE DATABASE :' || :'POSTGRES_DB' 
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'POSTGRES_DB')\gexec
-
--- Switch to the database
-\c :POSTGRES_DB;
-
--- Create user and grant privileges dynamically
-DO $$
-DECLARE
-    chatbot_user TEXT := :'POSTGRES_USER';
-    chatbot_password TEXT := :'POSTGRES_PASSWORD';
-BEGIN
-    IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = chatbot_user) THEN
-        EXECUTE format('CREATE USER %I WITH ENCRYPTED PASSWORD %L', chatbot_user, chatbot_password);
-    END IF;
-END $$;
-
-GRANT ALL PRIVILEGES ON DATABASE :POSTGRES_DB TO :CHATBOT_DB_USER;
-
-
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,

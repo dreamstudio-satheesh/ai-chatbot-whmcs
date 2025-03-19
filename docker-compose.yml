@@ -13,7 +13,7 @@ services:
       - /home/chatbot/app:/app
 
   db:
-    image: postgres:15
+    image: ankane/pgvector:latest  
     container_name: ai-chatbot-db
     restart: always
     env_file:
@@ -22,7 +22,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro 
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro  
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
 
   streamlit-ui:
     build: ./streamlit_ui
