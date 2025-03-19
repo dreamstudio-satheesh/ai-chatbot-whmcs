@@ -19,7 +19,7 @@ class TicketResponse(TicketCreate):
     class Config:
         from_attributes = True
 
-
-@router.get("/tickets")
-async def get_tickets():
-    return {"tickets": ["Hello! This is a sample ticket response."]}
+@router.get("/tickets", response_model=List[TicketResponse])
+async def get_tickets(db: Session = Depends(get_db)):
+    tickets = db.query(Ticket).all()
+    return tickets

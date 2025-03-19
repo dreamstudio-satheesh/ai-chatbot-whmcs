@@ -1,11 +1,12 @@
 import requests
 import faiss
 import numpy as np
-import psycopg2
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
+from utils.database import get_db
+from sqlalchemy.orm import Session
 
 # Load environment variables
 load_dotenv()
@@ -14,21 +15,22 @@ router = APIRouter()
 
 # OpenRouter.ai API Key
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+if not OPENROUTER_API_KEY:
+    raise ValueError("OPENROUTER_API_KEY is missing in .env file")
 
-# Construct DATABASE_URL from environment variables
-POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "secret")
-POSTGRES_DB = os.getenv("POSTGRES_DB", "chatbot_db")
-POSTGRES_HOST = os.getenv("POSTGRES_HOST", "ai-chatbot-db")
+# PostgreSQL Connection via SQLAlchemy
+from models.database import SessionLocal
 
-DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:5432/{POSTGRES_DB}"
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
-# Establish database connection
-conn = psycopg2.connect(DATABASE_URL)
+class ChatRequest(BaseModel):
+    message: str
 
-cursor = conn.cursor()
-
-
-@router.post("/")
-async def chatbot_response():
-    return {"response": "Hello from AI Chatbot!"}
+@router.post("/chat")
+async def chatbot_response(request: ChatRequest):
+    return {"response": f"Hello! You said: {request.message}"}
