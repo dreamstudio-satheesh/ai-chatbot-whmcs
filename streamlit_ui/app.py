@@ -1,34 +1,47 @@
 import streamlit as st
-import requests
 import os
+from dotenv import load_dotenv
 
-# API URL for FastAPI backend
-API_URL = "http://ai-chatbot:8000"
+# Load environment variables
+load_dotenv()
 
-st.title("AI Chatbot RAG Management")
+# Hardcoded user credentials (for testing purposes)
+VALID_USERS = {
+    "admin": "admin123",  # username: password
+    "support": "support456"
+}
 
-# Text Input for Queries
-query = st.text_input("Enter a query:")
+# Initialize session state
+if "authenticated" not in st.session_state:
+    st.session_state["authenticated"] = False
 
-if st.button("Search Knowledge Base"):
-    if query:
-        response = requests.get(f"{API_URL}/search", params={"query": query})
-        if response.status_code == 200:
-            st.write("### Search Results:")
-            st.json(response.json())
-        else:
-            st.error("Failed to fetch results.")
+# Login function
+def login(username, password):
+    if username in VALID_USERS and VALID_USERS[username] == password:
+        st.session_state["authenticated"] = True
+        st.session_state["username"] = username
+        st.success(f"Welcome, {username}!")
+        st.experimental_rerun()
     else:
-        st.warning("Please enter a query.")
+        st.error("Invalid username or password")
 
-# Upload Section
-st.write("## Upload Documents")
-uploaded_file = st.file_uploader("Upload a document", type=["txt", "pdf", "docx"])
+# Logout function
+def logout():
+    st.session_state["authenticated"] = False
+    st.experimental_rerun()
 
-if uploaded_file:
-    files = {"file": uploaded_file.getvalue()}
-    response = requests.post(f"{API_URL}/upload", files=files)
-    if response.status_code == 200:
-        st.success("File uploaded successfully!")
-    else:
-        st.error("Upload failed.")
+# Streamlit UI
+st.title("🔐 Login - AI Chatbot Dashboard")
+
+if not st.session_state["authenticated"]:
+    with st.form("login_form"):
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        submit = st.form_submit_button("Login")
+    
+    if submit:
+        login(username, password)
+else:
+    st.sidebar.button("Logout", on_click=logout)
+    st.success(f"Logged in as {st.session_state['username']}")
+    st.write("Welcome to the AI Chatbot Dashboard!")
