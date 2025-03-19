@@ -38,6 +38,7 @@ services:
     depends_on:
       - ai-chatbot
     restart: always
-
+    volumes:
+      - ./streamlit_ui:/app  
 volumes:
   postgres_data:
