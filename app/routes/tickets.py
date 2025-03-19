@@ -19,14 +19,7 @@ class TicketResponse(TicketCreate):
     class Config:
         from_attributes = True
 
-@router.post("/tickets", response_model=TicketResponse)
-async def create_new_ticket(ticket: TicketCreate, db: Session = Depends(get_db)):
-    new_ticket = Ticket(subject=ticket.subject, description=ticket.description)
-    db.add(new_ticket)
-    db.commit()
-    db.refresh(new_ticket)
-    return new_ticket
 
-@router.get("/tickets", response_model=List[TicketResponse])
-async def fetch_all_tickets(db: Session = Depends(get_db)):
-    return db.query(Ticket).all()
+@router.get("/tickets")
+async def get_tickets():
+    return {"tickets": ["Hello! This is a sample ticket response."]}
