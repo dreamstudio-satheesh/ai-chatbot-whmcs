@@ -18,8 +18,8 @@ class TicketRequest(BaseModel):
 # WHMCS API Function
 def get_whmcs_tickets():
     WHMCS_API_URL = os.getenv("WHMCS_API_URL")
-    WHMCS_USERNAME = os.getenv("WHMCS_USERNAME")  # Admin username
-    WHMCS_PASSWORD = os.getenv("WHMCS_PASSWORD")  # Admin password (or hashed)
+    WHMCS_USERNAME = os.getenv("WHMCS_API_KEY")  # Admin username
+    WHMCS_PASSWORD = os.getenv("WHMCS_API_IDENTIFIER")  # Admin password (or hashed)
     
     if not WHMCS_API_URL or not WHMCS_USERNAME or not WHMCS_PASSWORD:
         raise HTTPException(status_code=500, detail="Missing WHMCS API credentials")
