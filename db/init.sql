@@ -1,7 +1,7 @@
 -- Enable pgvector extension
 CREATE EXTENSION IF NOT EXISTS vector;
 
-CREATE TABLE users (
+/* CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -46,4 +46,4 @@ CREATE TABLE chatbot_settings (
     id SERIAL PRIMARY KEY,
     setting_key VARCHAR(255) UNIQUE NOT NULL,
     setting_value TEXT NOT NULL
-);
+); */
