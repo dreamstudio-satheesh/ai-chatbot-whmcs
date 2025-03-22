@@ -20,6 +20,7 @@ services:
       - .env
     volumes:
       - ./webapp:/var/www/html
+    command: ["php-fpm"]
     ports:
       - "9000:9000"
 
