@@ -11,7 +11,7 @@ chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 php artisan config:clear
 php artisan cache:clear
 php artisan view:clear
-php artisan migrate --force
+php artisan migrate:fresh
 php artisan db:seed --force
 
 # Start PHP-FPM

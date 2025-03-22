@@ -1,51 +1,55 @@
-FROM php:8.3-fpm
+# --- Stage 1: Build Composer Dependencies ---
+    FROM php:8.3-cli AS composer
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    unzip \
-    curl \
-    libpq-dev \
-    nginx \
-    supervisor \
-    redis \
-    libzip-dev \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    sqlite3 \
-    && docker-php-ext-install pdo pdo_pgsql bcmath \
-    && pecl install redis \
-    && docker-php-ext-enable redis
-
-# Cleanup
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-
-# Set working directory
-WORKDIR /var/www/html
-
-# Copy application files
-COPY . .
-
-# Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
-
-# Set permissions
-# RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-# RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
-
-# Copy Supervisor configuration for managing queue workers & WebSockets
-COPY supervisord.conf /etc/supervisord.conf
-
-# Entrypoint script for migrations
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
-# Expose ports
-EXPOSE 9000
-
-# Start Supervisor
-CMD ["sh", "/usr/local/bin/docker-entrypoint.sh"]
+    WORKDIR /app
+    
+    # Install only what's needed to build
+    RUN apt-get update && apt-get install -y unzip curl git libzip-dev \
+        && docker-php-ext-install zip
+    
+    # Install Composer
+    RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    
+    # Copy only composer files first to cache dependencies
+    COPY . .
+    
+    # Install PHP dependencies without dev
+    RUN composer install --no-dev --optimize-autoloader
+    
+    # --- Stage 2: Final Laravel App Image ---
+    FROM php:8.3-fpm
+    
+    # Install only runtime dependencies
+    RUN apt-get update && apt-get install -y \
+        libpq-dev \
+        redis \
+        libzip-dev \
+        libpng-dev \
+        libonig-dev \
+        libxml2-dev \
+        sqlite3 \
+        && docker-php-ext-install pdo pdo_pgsql bcmath zip \
+        && pecl install redis \
+        && docker-php-ext-enable redis \
+        && apt-get purge -y --auto-remove unzip curl git \
+        && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    
+    WORKDIR /var/www/html
+    
+    # Copy only Laravel app files
+    COPY . .
+    
+    # Copy dependencies from builder stage
+    COPY --from=composer /app/vendor ./vendor
+    
+    # Set Laravel permissions
+    RUN chown -R www-data:www-data storage bootstrap/cache \
+        && chmod -R 775 storage bootstrap/cache
+    
+    # Copy entrypoint
+    COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+    RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+    
+    EXPOSE 9000
+    CMD ["sh", "/usr/local/bin/docker-entrypoint.sh"]
+    
