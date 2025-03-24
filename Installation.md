@@ -86,7 +86,6 @@ Expected containers:
 
 - `ai_chatbot_backend` (FastAPI service)
 - `postgres_db` (PostgreSQL database)
-- `streamlit_admin` (Streamlit UI, if enabled)
 
 ## Step 8: Access the Services
 
