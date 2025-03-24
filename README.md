@@ -21,10 +21,10 @@ This project is an AI-powered chatbot and ticket answering system designed for w
 
 ## Folder Structure
 
-Please refer to the [Folder Structure](Structure.md) File.
+Please refer to the [Folder Structure](Docs/Structure.md) File.
 
 ## Installation & Setup
-For detailed installation steps, refer to the [Installation Guide](Installation.md) File.
+For detailed installation steps, refer to the [Installation Guide](Docs/Installation.md) File.
 
 ## Usage
 ### API Endpoints (FastAPI)
