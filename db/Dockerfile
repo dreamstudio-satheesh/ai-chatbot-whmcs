@@ -1,4 +1,4 @@
-FROM postgres:15
+FROM ankane/pgvector:latest
 
 # Install pgvector extension
 RUN apt-get update && apt-get install -y postgresql-contrib
