@@ -65,7 +65,10 @@ cd ai-chatbot-whmcs
 Create a `.env` file and add your configurations:
 
 ```bash
-echo "DATABASE_URL=postgresql://postgres:password@postgres:5432/ai_db" > .env
+echo "POSTGRES_USER=postgres" > .env
+echo "POSTGRES_PASSWORD=your_strong_password" >> .env
+echo "POSTGRES_DB=ai_db" >> .env
+echo "DATABASE_URL=postgresql://postgres:your_strong_password@postgres:5432/ai_db" >> .env
 echo "WHMCS_API_URL=<your-whmcs-url>" >> .env
 echo "WHMCS_API_KEY=<your-api-key>" >> .env
 ```
