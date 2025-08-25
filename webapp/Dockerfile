@@ -1,26 +1,3 @@
-# ---------- Stage 1: Composer dependencies ----------
-FROM composer:2 AS vendor
-WORKDIR /app
-
-# Leverage build cache: install deps based on composer files first
-COPY composer.json composer.lock ./
-RUN composer install \
-    --no-dev \
-    --prefer-dist \
-    --no-progress \
-    --no-interaction
-
-# Now copy the rest of the app and optimize autoload
-COPY . .
-RUN composer install \
-    --no-dev \
-    --prefer-dist \
-    --no-progress \
-    --no-interaction \
-    --optimize-autoloader
-
-
-# ---------- Stage 2: PHP-FPM + Nginx runtime ----------
 FROM php:8.3-fpm
 
 # Install system dependencies
@@ -33,38 +10,59 @@ RUN apt-get update && apt-get install -y \
     redis \
     libzip-dev \
     libpng-dev \
+    libonig-dev \
+    libxml2-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    sqlite3 \
     git \
- && rm -rf /var/lib/apt/lists/*
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_mysql pdo_pgsql bcmath gd zip mbstring xml \
+    && pecl install redis \
+    && docker-php-ext-enable redis
 
-# PHP extensions (adjust as needed)
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
- && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql zip
+# Cleanup
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Nginx & PHP-FPM config
+# Install Composer first
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Set working directory
 WORKDIR /var/www/html
-ENV PHP_FPM_LISTEN=9000
-EXPOSE 9000
 
-# Copy application (including vendor from builder)
-COPY --from=vendor /app /var/www/html
+# Copy composer files first (better caching)
+COPY composer.json composer.lock ./
 
-# Set Laravel permissions
+# Install dependencies without scripts/autoloader first
+RUN composer install --no-dev --no-scripts --no-autoloader
+
+# Copy rest of application
+COPY . .
+
+# Now complete the composer install
+RUN composer dump-autoload --optimize --no-dev
+
+# Verify vendor directory was created
+RUN echo "=== Final verification ===" \
+    && ls -la /var/www/html/vendor/autoload.php \
+    && echo "SUCCESS: autoload.php found!"
+
+# Set permissions
 RUN chown -R www-data:www-data /var/www/html \
- && mkdir -p storage bootstrap/cache \
- && chown -R www-data:www-data storage bootstrap/cache \
- && find storage -type d -exec chmod 775 {} \; \
- && find storage -type f -exec chmod 664 {} \; \
- && chmod -R 775 bootstrap/cache
+    && mkdir -p /var/www/html/storage/logs \
+    && mkdir -p /var/www/html/bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# (Optional) ensure .env exists at build or mount at runtime
-# COPY .env /var/www/html/.env
-
-# Supervisor & entrypoint
+# Copy Supervisor configuration for managing queue workers & WebSockets
 COPY supervisord.conf /etc/supervisord.conf
+
+# Entrypoint script for migrations
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Start Supervisor (runs php-fpm & nginx as configured in supervisord.conf)
+# Expose ports
+EXPOSE 9000
+
+# Start Supervisor
 CMD ["sh", "/usr/local/bin/docker-entrypoint.sh"]
